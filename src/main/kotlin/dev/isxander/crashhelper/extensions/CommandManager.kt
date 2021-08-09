@@ -17,8 +17,6 @@ object CommandManager : Extension() {
             name = "invalidate"
             description = "Invalidates response cache."
 
-            guild = TEST_SERVER_ID
-
             autoAck = AutoAckType.PUBLIC
 
             check(hasPermission(Permission.Administrator))
