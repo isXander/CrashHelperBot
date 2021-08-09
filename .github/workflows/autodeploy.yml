@@ -41,4 +41,4 @@ jobs:
             tmux kill-session -t deployment
             rm /home/xander/deployment/DEPLOYMENT.jar
             mv /home/xander/deployment/DEPLOYMENT-NEW.jar /home/xander/deployment/DEPLOYMENT.jar
-            tmux new-session -d -s deployment 'java -jar home/xander/deployment/DEPLOYMENT.jar'
+            tmux new -s deployment ./deploy.sh
