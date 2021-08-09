@@ -9,6 +9,7 @@ import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.entity.Message
 import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.core.event.message.MessageUpdateEvent
+import dev.kord.core.kordLogger
 import dev.kord.rest.builder.message.create.embed
 import io.ktor.client.request.*
 import kotlinx.coroutines.newFixedThreadPoolContext
@@ -28,6 +29,9 @@ object ImageScanner : Extension() {
         tesseract.setLanguage("eng")
 
         event<MessageCreateEvent> {
+            booleanCheck { !(it.member?.isBot ?: false) }
+            booleanCheck { it.message.webhookId == null }
+
             action {
                 runSuspended(dispatcher) {
                     event.message.attachments
@@ -35,17 +39,10 @@ object ImageScanner : Extension() {
                         .filter { it.size / 1000 / 1000 < 5 }
                         .map { it.download().inputStream().use(ImageIO::read) }
                         .forEach { handleImage(it, event.message) }
-                }
-            }
-        }
-
-        event<MessageUpdateEvent> {
-            action {
-                runSuspended(dispatcher) {
-                    event.message.asMessage().embeds
-                        .filter { it.image != null }
-                        .filter { getContentLength(it.image!!.url!!) / 1000 / 1000 < 5 }
-                        .map { http.get<ByteArray>(it.image!!.url!!).inputStream().use(ImageIO::read) }
+                    event.message.embeds
+                        .filter { it.thumbnail?.url != null }
+                        .filter { getContentLength(it.thumbnail!!.url!!) / 1000 / 1000 < 5 }
+                        .map { http.get<ByteArray>(it.thumbnail!!.url!!).inputStream().use(ImageIO::read) }
                         .forEach { handleImage(it, event.message.asMessage()) }
                 }
             }

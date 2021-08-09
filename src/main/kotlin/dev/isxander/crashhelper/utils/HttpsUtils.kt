@@ -4,6 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.http.cio.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -14,7 +15,7 @@ val http = HttpClient()
 
 fun getContentLength(url: String): Long {
     return runBlocking {
-        http.head<Headers>(url)["Content-Length"]!!.toLong()
+        http.head<HttpResponse>(url).headers["Content-Length"]!!.toLong()
     }
 }
 
