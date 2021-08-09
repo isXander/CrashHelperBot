@@ -86,13 +86,11 @@ object TextScanner : Extension() {
                                 val text = filterText(_text, "[redacted]")
                                 val hastebin = uploadToHastebin(text, text.count{ it == '\n' } > 40000) + ".txt"
 
-                                val fieldName = hastebin ?: "**Failed to upload text to hastebin!**"
-
                                 var solution = getSolutionText(text)
                                 if (solution.isEmpty()) solution = "Nothing found."
 
                                 field {
-                                    name = "**$fieldName**"
+                                    name = "**$hastebin**"
                                     value = solution
                                 }
                             }

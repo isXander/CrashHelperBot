@@ -1,0 +1,43 @@
+name: Auto Deploy to Server
+
+on:
+  push:
+    branches: [ main ]
+
+# tf is docker /s
+jobs:
+  autodeploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup JDK 16
+        uses: actions/setup-java@v2
+        with:
+          java-version: 16
+          distribution: adopt
+      - name: Grant Execution Permission for Gradle
+        run: chmod +x gradlew
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.AUTODEPLOY_SSH_KEY }}
+      - name: Adding Known Hosts
+        run: ssh-keyscan -H ${{ secrets.AUTODEPLOY_SSH_HOST }} >> ~/.ssh/known_hosts
+      - name: Deploy with rsync
+        run: rsync -avz ./build/libs/DEPLOYMENT.jar xander@${{ secrets.AUTODEPLOY_SSH_HOST }}:/home/xander/deployment/DEPLOYMENT-NEW.jar
+
+      - name: Start new deployment
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AUTODEPLOY_SSH_HOST }}
+          username: xander
+          script: |
+            tmux kill-session -t deployment
+            rm /home/xander/deployment/DEPLOYMENT.jar
+            mv /home/xander/deployment/DEPLOYMENT-NEW.jar /home/xander/deployment/DEPLOYMENT.jar
+            tmux new-session -d -s deployment 'java -jar home/xander/deployment/DEPLOYMENT.jar'
