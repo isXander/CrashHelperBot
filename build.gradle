@@ -40,5 +40,13 @@ dependencies {
 shadowJar {
     configurations = [project.configurations.include]
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    archiveClassifier.set('')
+    archiveName 'DEPLOYMENT.jar'
+
+    exclude 'tessdata/**/*'
+    exclude 'win32-x86-64/*'
+    exclude 'win32-x86/*'
+    exclude 'script/*'
+    exclude 'readme.*'
+    exclude 'versionchanges.txt'
+    exclude 'LICENSE'
 }

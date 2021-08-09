@@ -8,8 +8,6 @@ import dev.kord.common.Color
 import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.entity.Message
 import dev.kord.core.event.message.MessageCreateEvent
-import dev.kord.core.event.message.MessageUpdateEvent
-import dev.kord.core.kordLogger
 import dev.kord.rest.builder.message.create.embed
 import io.ktor.client.request.*
 import kotlinx.coroutines.newFixedThreadPoolContext
