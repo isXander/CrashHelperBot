@@ -1,20 +1,22 @@
-package dev.isxander.crashhelper
+package dev.isxander.crashhelper.utils
 
+import dev.isxander.crashhelper.responses
 import kotlinx.serialization.json.*
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.math.abs
 
 
-val IP_REGEX: Pattern = Pattern.compile("([0-9]{1,3})\\\\.([0-9]{1,3})\\\\.([0-9]{1,3})\\\\.([0-9]{1,3})", Pattern.CASE_INSENSITIVE)
-val URL_REGEX: Pattern = Pattern.compile("https?://(www\\\\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\\\\.[a-zA-Z0-9()]{1,6}\\\\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)", Pattern.CASE_INSENSITIVE)
-val SENSITIVE_INFO_REGEX: Pattern = Pattern.compile("(\"access_key\":\".+\"|api.sk1er.club/auth|LoginPacket|SentryAPI.cpp|\"authHash\":|\"hash\":\"|--accessToken \\S+|\\(Session ID is token:|Logging in with details: |Server-Hash: |Checking license key :|USERNAME=.*|https://api\\.hypixel\\.net/.+(\\?key=|&key=))", Pattern.CASE_INSENSITIVE)
-val EMAIL_REGEX: Pattern = Pattern.compile("[a-zA-Z0-9_.+-]{1,50}@[a-zA-Z0-9-]{1,50}\\.[a-zA-Z0-9-.]{1,10}", Pattern.CASE_INSENSITIVE)
-val PASTEBIN_REGEX: Pattern = Pattern.compile("(?:https?://)?(?<domain>paste\\.ee|pastebin\\.com|has?tebin\\.com|hasteb\\.in|hst\\.sh)/(?:raw/|p/)?([\\w-.]+)", Pattern.CASE_INSENSITIVE)
-val RAM_REGEX: Pattern = Pattern.compile("-Xmx(?<ram>\\d+)(?<type>[GMK])", Pattern.CASE_INSENSITIVE)
+val IP_REGEX: Regex = Regex("([0-9]{1,3})\\\\.([0-9]{1,3})\\\\.([0-9]{1,3})\\\\.([0-9]{1,3})", RegexOption.IGNORE_CASE)
+val URL_REGEX: Regex = Regex("https?://(www\\\\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\\\\.[a-zA-Z0-9()]{1,6}\\\\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)", RegexOption.IGNORE_CASE)
+val SENSITIVE_INFO_REGEX: Regex = Regex("(\"access_key\":\".+\"|api.sk1er.club/auth|LoginPacket|SentryAPI.cpp|\"authHash\":|\"hash\":\"|--accessToken \\S+|\\(Session ID is token:|Logging in with details: |Server-Hash: |Checking license key :|USERNAME=.*|https://api\\.hypixel\\.net/.+(\\?key=|&key=))", RegexOption.IGNORE_CASE)
+val EMAIL_REGEX: Regex = Regex("[a-zA-Z0-9_.+-]{1,50}@[a-zA-Z0-9-]{1,50}\\.[a-zA-Z0-9-.]{1,10}", RegexOption.IGNORE_CASE)
+val PASTEBIN_REGEX: Regex = Regex("(?:https?://)?(?<domain>paste\\.ee|pastebin\\.com|has?tebin\\.com|hasteb\\.in|hst\\.sh)/(?:raw/|p/)?([\\w-.]+)", RegexOption.IGNORE_CASE)
+val RAM_REGEX: Regex = Regex("-Xmx(?<ram>\\d+)(?<type>[GMK])", RegexOption.IGNORE_CASE)
+val CODE_BLOCK_REGEX: Regex = Regex("```(?<language>[a-zA-Z0-9]*)\\n(?<code>.+)\\n```", RegexOption.DOT_MATCHES_ALL)
 
-val FORGE_MOD_REGEX: Pattern = Pattern.compile("(?<state>(?:U?L?C?H?I?J?A?D?E?)+)\\t(?<id>(?: ?[\\w-]+)+)\\{(?<version>(?:[0-9-\\w]\\.*)+)\\} \\[(?<name>(?: ?[\\w-]+)+)\\] \\((?<file>(?: ?(?:[^/<>:\\\"\\\\|?* ])+)+)\\)")
-val ESSENTIAL_MOD_REGEX: Pattern = Pattern.compile("(?<state>(?:U?L?C?H?I?J?A?D?E?)+) +\\| +(?<id>(?: ?[\\w-]+)+) +\\| +(?<version>(?:[0-9-\\w]\\.*)+) +\\| +(?<file>(?: ?(?:[^/<>:\\\"\\\\|?* ])+)+)")
+val FORGE_MOD_REGEX: Regex = Regex("(?<state>(?:U?L?C?H?I?J?A?D?E?)+)\\t(?<id>(?: ?[\\w-]+)+)\\{(?<version>(?:[0-9-\\w]\\.*)+)\\} \\[(?<name>(?: ?[\\w-]+)+)\\] \\((?<file>(?: ?(?:[^/<>:\\\"\\\\|?* ])+)+)\\)")
+val ESSENTIAL_MOD_REGEX: Regex = Regex("(?<state>(?:U?L?C?H?I?J?A?D?E?)+) +\\| +(?<id>(?: ?[\\w-]+)+) +\\| +(?<version>(?:[0-9-\\w]\\.*)+) +\\| +(?<file>(?: ?(?:[^/<>:\\\"\\\\|?* ])+)+)")
 
 val LOG_TEXT = setOf(
     "The game crashed whilst",
@@ -38,31 +40,31 @@ val LOG_TEXT = setOf(
 
 fun filterText(_raw: String, replacement: String): String {
     var raw = _raw
-    raw = PASTEBIN_REGEX.matcher(raw).replaceAll(replacement)
-    raw = SENSITIVE_INFO_REGEX.matcher(raw).replaceAll(replacement)
-    raw = EMAIL_REGEX.matcher(raw).replaceAll(replacement)
-    raw = IP_REGEX.matcher(raw).replaceAll(replacement)
-    raw = URL_REGEX.matcher(raw).replaceAll(replacement)
+    raw = PASTEBIN_REGEX.replace(raw, replacement)
+    raw = SENSITIVE_INFO_REGEX.replace(raw, replacement)
+    raw = EMAIL_REGEX.replace(raw, replacement)
+    raw = IP_REGEX.replace(raw, replacement)
+    raw = URL_REGEX.replace(raw, replacement)
+    raw = CODE_BLOCK_REGEX.replace(raw, replacement)
     return raw
 }
 
 fun getSolutionText(text: String): String {
     val solutions = linkedMapOf<String, MutableList<String>>()
 
-    for (category in CrashHelper.responses.keys) {
-        for (categoryElement in CrashHelper.responses[category]) {
-            val issue = JsonObjectExt(categoryElement.asJsonObject)
-            val info = issue["info", ""]!!
-            if (info.isEmpty()) continue
+    for (category in responses.keys) {
+        for (categoryElement in responses[category]?.jsonArray ?: JsonArray(listOf())) {
+            val issue = categoryElement.jsonObject
+            val info = issue["info"]?.jsonPrimitive?.contentOrNull ?: continue
 
             var andCheck = true
             var orCheck = true
 
-            for (checkElement in issue["and", JsonArray()]!!) {
-                val check = JsonObjectExt(checkElement.asJsonObject)
+            for (checkElement in issue["and"]?.jsonArray ?: JsonArray(listOf())) {
+                val check = checkElement.jsonObject
 
                 var outcome = computeMethod(text, check)
-                if (check["not", false]) outcome = !outcome
+                if (check["not"]?.jsonPrimitive?.booleanOrNull == true) outcome = !outcome
 
                 if (!outcome) {
                     andCheck = false
@@ -70,13 +72,13 @@ fun getSolutionText(text: String): String {
                 }
             }
 
-            if (issue.has("or")) {
+            if (issue.contains("or")) {
                 orCheck = false;
-                for (checkElement in issue["or"]!!) {
-                    val check = JsonObjectExt(checkElement.asJsonObject)
+                for (checkElement in issue["or"]!!.jsonArray) {
+                    val check = checkElement.jsonObject
 
                     var outcome = computeMethod(text, check)
-                    if (check["not", false]) outcome = !outcome
+                    if (check["not"]?.jsonPrimitive?.booleanOrNull == true) outcome = !outcome
 
                     if (outcome) {
                         orCheck = true
@@ -91,10 +93,11 @@ fun getSolutionText(text: String): String {
             }
         }
 
-        val matcher = RAM_REGEX.matcher(text)
-        if (matcher.find()) {
-            var ram = Integer.parseInt(matcher.group("ram"))
-            val type = matcher.group("type")
+
+        val matched = RAM_REGEX.find(text)
+        if (matched != null) {
+            var ram = Integer.parseInt(matched.groups["ram"]!!.value)
+            val type = matched.groups["type"]!!.value
             if (type.equals("G", true)) ram *= 1024
             if (type.equals("K", true)) ram /= 1000
 
@@ -125,7 +128,7 @@ private fun computeMethod(text: String, check: JsonObject): Boolean {
             if (check["exact"]?.jsonPrimitive?.booleanOrNull == true) return text.contains(value, check["ic"]?.jsonPrimitive?.booleanOrNull ?: false)
 
             for (i in 0..text.length - value.length + 1) {
-                if (countDiffs(text.substring(i until i + value.length - 2), value) < (value.length - 1) * check["leniency", 0.2f])
+                if (countDiffs(text.substring(i until i + value.length - 2), value) < (value.length - 1) * (check["leniency"]?.jsonPrimitive?.floatOrNull ?: 0.2f))
                     return true
             }
             return false
@@ -133,10 +136,10 @@ private fun computeMethod(text: String, check: JsonObject): Boolean {
         "regex" -> Pattern.compile(value, Pattern.CASE_INSENSITIVE).matcher(text).find()
         "modloaded" -> {
             val id =
-                ESSENTIAL_MOD_REGEX.matcher(text)
-                        .let { if (it.find()) it.group("id") else null }
-                    ?: FORGE_MOD_REGEX.matcher(text)
-                        .let { if (it.find()) it.group("id") else null }
+                ESSENTIAL_MOD_REGEX.find(text)
+                        ?.let { it.groups["id"]?.value }
+                    ?: FORGE_MOD_REGEX.find(text)
+                        ?.let { it.groups["id"]?.value }
                     ?: return false
 
             return id.equals(value, true)
@@ -155,13 +158,4 @@ private fun countDiffs(x: String, y: String): Int {
     }
 
     return count
-}
-
-fun costOfSubstitution(a: Char, b: Char): Int {
-    return if (a == b) 0 else 1
-}
-
-fun min(vararg numbers: Int): Int {
-    return Arrays.stream(numbers)
-        .min().orElse(Int.MAX_VALUE)
 }

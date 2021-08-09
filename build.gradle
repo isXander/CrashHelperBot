@@ -26,17 +26,15 @@ dependencies {
     include 'org.jetbrains.kotlin:kotlin-reflect:1.5.21'
     include 'org.jetbrains.kotlin:kotlin-serialization:1.5.21'
 
-    include 'dev.kord:kord-core:0.8.0-M3'
+    include 'dev.kord:kord-core:0.8.0-M4'
 
-    include 'com.kotlindiscord.kord.extensions:kord-extensions:v1.4.4-RC2'
-    annotationProcessor 'com.kotlindiscord.kord.extensions:kord-extensions:v1.4.4-RC2'
+    include 'com.kotlindiscord.kord.extensions:kord-extensions:1.4.4-RC3'
+    annotationProcessor 'com.kotlindiscord.kord.extensions:kord-extensions:1.4.4-RC3'
 
     include 'org.slf4j:slf4j-simple:1.7.30'
 
     include 'net.sourceforge.tess4j:tess4j:4.5.5'
     include 'org.imgscalr:imgscalr-lib:4.2'
-
-    include 'io.github.cdimascio:dotenv-kotlin:6.2.2'
 }
 
 shadowJar {
