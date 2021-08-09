@@ -37,6 +37,7 @@ jobs:
         with:
           host: ${{ secrets.AUTODEPLOY_SSH_HOST }}
           username: xander
+          password: ${{ secrets.AUTODEPLOY_SSH_PASS }}
           script: |
             tmux kill-session -t deployment
             rm /home/xander/deployment/DEPLOYMENT.jar
