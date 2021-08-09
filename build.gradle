@@ -6,7 +6,7 @@ plugins {
     id 'application'
 }
 
-mainClassName = 'dev.isxander.crashhelper.CrashHelperKt'
+mainClassName = 'dev.isxander.crashhelper.MainKt'
 
 group 'dev.isxander'
 version '1.0'
