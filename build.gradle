@@ -1,0 +1,46 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.21'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.5.21'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id 'application'
+}
+
+mainClassName = 'dev.isxander.crashhelper.CrashHelperKt'
+
+group 'dev.isxander'
+version '1.0'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://maven.kotlindiscord.com/repository/maven-public/' }
+}
+
+configurations {
+    include
+    implementation.extendsFrom include
+}
+
+dependencies {
+    include 'org.jetbrains.kotlin:kotlin-stdlib:1.5.21'
+    include 'org.jetbrains.kotlin:kotlin-reflect:1.5.21'
+    include 'org.jetbrains.kotlin:kotlin-serialization:1.5.21'
+
+    include 'dev.kord:kord-core:0.8.0-M3'
+
+    include 'com.kotlindiscord.kord.extensions:kord-extensions:v1.4.4-RC2'
+    annotationProcessor 'com.kotlindiscord.kord.extensions:kord-extensions:v1.4.4-RC2'
+
+    include 'org.slf4j:slf4j-simple:1.7.30'
+
+    include 'net.sourceforge.tess4j:tess4j:4.5.5'
+    include 'org.imgscalr:imgscalr-lib:4.2'
+
+    include 'io.github.cdimascio:dotenv-kotlin:6.2.2'
+}
+
+shadowJar {
+    configurations = [project.configurations.include]
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    archiveClassifier.set('')
+}
