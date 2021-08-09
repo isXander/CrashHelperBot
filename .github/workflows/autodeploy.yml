@@ -2,7 +2,7 @@ name: Auto Deploy to Server
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 # tf is docker /s
 jobs:
