@@ -15,6 +15,9 @@ val PASTEBIN_REGEX: Regex = Regex("(?:https?://)?(?<domain>paste\\.ee|pastebin\\
 val RAM_REGEX: Regex = Regex("-Xmx(?<ram>\\d+)(?<type>[GMK])", RegexOption.IGNORE_CASE)
 val CODE_BLOCK_REGEX: Regex = Regex("```(?<language>[a-zA-Z0-9]*)\\n(?<code>.+)\\n```", RegexOption.DOT_MATCHES_ALL)
 
+val WINDOWS_MAC_USERNAME_REGEX: Regex = Regex("Users[/\\\\](?<username>[^/\\\\]+)(?:[/\\\\]*.)*")
+val LINUX_USERNAME_REGEX: Regex = Regex("/home/(?<username>[^/]+)(?:/*[^/])*")
+
 val FORGE_MOD_REGEX: Regex = Regex("(?<state>(?:U?L?C?H?I?J?A?D?E?)+)\\t(?<id>(?: ?[\\w-]+)+)\\{(?<version>(?:[0-9-\\w]\\.*)+)\\} \\[(?<name>(?: ?[\\w-]+)+)\\] \\((?<file>(?: ?(?:[^/<>:\\\"\\\\|?* ])+)+)\\)")
 val ESSENTIAL_MOD_REGEX: Regex = Regex("(?<state>(?:U?L?C?H?I?J?A?D?E?)+) +\\| +(?<id>(?: ?[\\w-]+)+) +\\| +(?<version>(?:[0-9-\\w]\\.*)+) +\\| +(?<file>(?: ?(?:[^/<>:\\\"\\\\|?* ])+)+)")
 
@@ -46,6 +49,8 @@ fun filterText(_raw: String, replacement: String): String {
     raw = IP_REGEX.replace(raw, replacement)
     raw = URL_REGEX.replace(raw, replacement)
     raw = CODE_BLOCK_REGEX.replace(raw, replacement)
+    raw = WINDOWS_MAC_USERNAME_REGEX.replace(raw, replacement)
+    raw = LINUX_USERNAME_REGEX.replace(raw, replacement)
     return raw
 }
 
