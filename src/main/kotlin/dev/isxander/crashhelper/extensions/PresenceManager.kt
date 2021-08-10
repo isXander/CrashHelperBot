@@ -35,7 +35,7 @@ object PresenceManager : Extension() {
             status = PresenceStatus.DoNotDisturb
 
             var count = 0
-            kord.guilds.collect { count += 1 }
+            kord.guilds.collect { count += it.memberCount ?: 0 }
             watching("over $count people.")
         }
     }

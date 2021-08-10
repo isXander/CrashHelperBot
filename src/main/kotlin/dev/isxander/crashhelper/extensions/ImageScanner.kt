@@ -38,6 +38,7 @@ object ImageScanner : Extension() {
                         .map { it.download().inputStream().use(ImageIO::read) }
                         .forEach { handleImage(it, event.message) }
                     event.message.embeds
+                        .filter { it.video == null }
                         .filter { it.thumbnail?.url != null }
                         .filter { getContentLength(it.thumbnail!!.url!!) / 1000 / 1000 < 5 }
                         .map { http.get<ByteArray>(it.thumbnail!!.url!!).inputStream().use(ImageIO::read) }
