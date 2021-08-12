@@ -36,6 +36,7 @@ object TextScanner : Extension() {
 
                     event.message.attachments
                         .filter { TEXT_EXTENSIONS.stream().anyMatch { extension -> it.filename.endsWith(".$extension") } }
+                        .filter { it.size / 1000 / 1000 < 5 }
                         .map { it.download().decodeToString() }
                         .filter { LOG_TEXT.any(it::contains) }
                         .forEach { texts.add(it) }
@@ -47,8 +48,10 @@ object TextScanner : Extension() {
                             var key = url.substring(url.lastIndexOf('/'))
                             key = if (url.contains("paste.ee")) "r$key" else "raw$key"
 
-                            runBlocking { http.get<String>(url.substring(0, url.lastIndexOf('/')) + "/$key") }
+                            url.substring(0, url.lastIndexOf('/')) + "/$key"
                         }
+                        .filter { getContentLength(it) / 1024 / 1000 < 5 }
+                        .map { runBlocking { http.get<String>(it) } }
                         .filter { LOG_TEXT.any(it::contains) }
                         .forEach { texts.add(it) }
 

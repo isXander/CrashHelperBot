@@ -13,19 +13,28 @@ object PresenceManager : Extension() {
     override suspend fun setup() {
         event<ReadyEvent> {
             action {
-                updateActivity()
+                kord.editPresence {
+                    status = PresenceStatus.Idle
+                    competing("watching crashes")
+                }
             }
         }
 
         event<GuildCreateEvent> {
             action {
-                updateActivity()
+                kord.editPresence {
+                    status = PresenceStatus.Online
+                    watching("everyone have fun")
+                }
             }
         }
 
         event<GuildDeleteEvent> {
             action {
-                updateActivity()
+                kord.editPresence {
+                    status = PresenceStatus.DoNotDisturb
+                    listening("to sad music")
+                }
             }
         }
     }
