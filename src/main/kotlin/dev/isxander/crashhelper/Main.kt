@@ -11,6 +11,8 @@ import dev.kord.common.entity.PresenceStatus
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.event.guild.MemberJoinEvent
 import dev.kord.core.event.guild.MemberLeaveEvent
+import dev.kord.gateway.Intent
+import dev.kord.gateway.Intents
 import kotlinx.coroutines.flow.toList
 import mu.KotlinLogging
 import org.slf4j.Logger
@@ -27,6 +29,13 @@ suspend fun main() {
     val bot = ExtensibleBot(TOKEN) {
         slashCommands {
             enabled = true
+        }
+
+        intents {
+            +Intent.GuildMessages
+            +Intent.GuildMessageReactions
+            +Intent.Guilds
+            +Intent.GuildEmojis
         }
 
         extensions {
