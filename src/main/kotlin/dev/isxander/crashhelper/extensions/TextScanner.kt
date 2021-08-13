@@ -48,10 +48,8 @@ object TextScanner : Extension() {
                             var key = url.substring(url.lastIndexOf('/'))
                             key = if (url.contains("paste.ee")) "r$key" else "raw$key"
 
-                            url.substring(0, url.lastIndexOf('/')) + "/$key"
+                            runBlocking { http.get<String>(url.substring(0, url.lastIndexOf('/')) + "/$key") }
                         }
-                        .filter { getContentLength(it) / 1024 / 1000 < 5 }
-                        .map { runBlocking { http.get<String>(it) } }
                         .filter { LOG_TEXT.any(it::contains) }
                         .forEach { texts.add(it) }
 
