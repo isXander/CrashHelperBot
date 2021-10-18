@@ -24,7 +24,7 @@ object PresenceManager : Extension() {
             action {
                 kord.editPresence {
                     status = PresenceStatus.Online
-                    watching("everyone have fun")
+                    watching("my plugs getting pulled out")
                 }
             }
         }
