@@ -24,7 +24,7 @@ object PresenceManager : Extension() {
             action {
                 kord.editPresence {
                     status = PresenceStatus.Online
-                    watching("my plugs getting pulled out")
+                    watching("new crash logs")
                 }
             }
         }
