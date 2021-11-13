@@ -3,6 +3,7 @@ name: Auto Deploy to Server
 on:
   push:
     branches: [ master ]
+  workflow_dispatch:
 
 # tf is docker /s
 jobs:
