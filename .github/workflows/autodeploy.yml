@@ -21,25 +21,6 @@ jobs:
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew build
-
-      - name: Install SSH Key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.AUTODEPLOY_SSH_KEY }}
-          known_hosts: 'just-a-placeholder-so-we-dont-get-errors'
-      - name: Adding Known Hosts
-        run: ssh-keyscan -H ${{ secrets.AUTODEPLOY_SSH_HOST }} >> ~/.ssh/known_hosts
-      - name: Deploy with rsync
-        run: rsync -avz ./build/libs/DEPLOYMENT.jar xander@${{ secrets.AUTODEPLOY_SSH_HOST }}:/home/xander/deployment/DEPLOYMENT-NEW.jar
-
-      - name: Start new deployment
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.AUTODEPLOY_SSH_HOST }}
-          username: xander
-          password: ${{ secrets.AUTODEPLOY_SSH_PASS }}
-          script: |
-            tmux kill-session -t deployment
-            rm /home/xander/deployment/DEPLOYMENT.jar
-            mv /home/xander/deployment/DEPLOYMENT-NEW.jar /home/xander/deployment/DEPLOYMENT.jar
-            tmux new -d -s deployment /home/xander/deployment/deploy.sh
+      - name: Upload jar
+        uses: actions/upload-artifact@v2.2.4
+        path: /build/libs/DEPLOYMENT.jar
