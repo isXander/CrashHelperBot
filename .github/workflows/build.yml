@@ -1,4 +1,4 @@
-name: Auto Deploy to Server
+name: build
 
 on:
   push:
@@ -25,4 +25,5 @@ jobs:
       - name: Upload jar
         uses: actions/upload-artifact@v1.0.0
         with:
+          name: idek
           path: /build/libs/DEPLOYMENT.jar
