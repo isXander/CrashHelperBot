@@ -23,5 +23,6 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
       - name: Upload jar
-        uses: actions/upload-artifact@v2.2.4
-        path: /build/libs/DEPLOYMENT.jar
+        uses: actions/upload-artifact@v1.0.0
+        with:
+          path: /build/libs/DEPLOYMENT.jar
